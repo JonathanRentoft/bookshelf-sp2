@@ -3,8 +3,9 @@ package app.security;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.security.RouteRole;
+import io.javalin.security.AccessManager;
 
-public class JwtAccessManager implements io.javalin.security.RouteRolesAccessManager {
+public class JwtAccessManager implements AccessManager {
 
     @Override
     public void manage(Handler handler, Context ctx,

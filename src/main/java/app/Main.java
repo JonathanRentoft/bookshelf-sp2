@@ -40,8 +40,7 @@ public class Main {
             config.staticFiles.add("/public");
             config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.router.mount(router -> {router.setRoleAccessManager(new JwtAccessManager());
-            });
+            config.accessManager(new JwtAccessManager());
         }).start(7070);
 
         // Register API routes
