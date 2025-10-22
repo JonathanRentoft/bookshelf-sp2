@@ -2,7 +2,7 @@ package app.controller;
 
 import app.dto.BookDTO;
 import app.dto.ErrorDTO;
-import app.entity.User;
+import app.entities.User;
 import app.security.Role;
 import app.service.BookService;
 import app.service.UserService;
