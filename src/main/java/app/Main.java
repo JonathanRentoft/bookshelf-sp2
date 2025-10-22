@@ -1,16 +1,12 @@
 package app;
 
-import app.config.SessionConfig;
-import app.config.ThymeleafConfig;
 import app.controller.AuthController;
 import app.controller.BookController;
 import app.repository.BookRepository;
 import app.repository.UserRepository;
-import app.security.JwtAccessManager;
 import app.service.BookService;
 import app.service.UserService;
 import io.javalin.Javalin;
-import io.javalin.rendering.template.JavalinThymeleaf;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -19,39 +15,36 @@ public class Main {
     public static void main(String[] args) {
         // Initializing Javalin and Jetty webserver
 
-        // Initialize JPA EntityManagerFactory
+        // Initialize JPA EntityManagerFactory (læser fra persistence.xml)
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("bookshelfPU");
         EntityManager em = emf.createEntityManager();
 
-        // Initialize repositories
+        // Initialize repositories (håndterer database-operationer)
         UserRepository userRepository = new UserRepository(em);
         BookRepository bookRepository = new BookRepository(em);
 
-        // Initialize services
+        // Initialize services (forretningslogik)
         UserService userService = new UserService(userRepository);
         BookService bookService = new BookService(bookRepository);
 
-        // Initialize controllers
+        // Initialize controllers (håndterer HTTP requests)
         AuthController authController = new AuthController(userService);
         BookController bookController = new BookController(bookService, userService);
 
-        // Initializing Javalin and Jetty webserver with JWT Access Manager
-        Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("/public");
-            config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
-            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.accessManager(new JwtAccessManager());
-        }).start(7070);
+        // Start Javalin webserver (simpel version uden sikkerhed)
+        Javalin app = Javalin.create().start(7070);
 
-        // Register API routes
+        // Register API routes (definerer endpoints)
         authController.registerRoutes(app);
         bookController.registerRoutes(app);
 
+        System.out.println("Server kører på http://localhost:7070");
 
-        // shutdown
+        // Shutdown hook (lukker database-forbindelse når programmet stopper)
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             em.close();
             emf.close();
+            System.out.println("Database-forbindelse lukket");
         }));
     }
 }
