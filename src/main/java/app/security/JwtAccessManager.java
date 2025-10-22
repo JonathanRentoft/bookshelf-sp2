@@ -3,12 +3,13 @@ package app.security;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.security.RouteRole;
-import org.jetbrains.annotations.NotNull;
 
-public class JwtAccessManager implements io.javalin.security.AccessManager {
+public class JwtAccessManager implements io.javalin.security.RouteRolesAccessManager {
 
     @Override
-    public void manage(@NotNull Handler handler, @NotNull Context ctx, @NotNull java.util.Set<? extends RouteRole> routeRoles) throws Exception {
+    public void manage(Handler handler, Context ctx,
+                       java.util.Set<? extends RouteRole> routeRoles)
+            throws Exception {
         if (routeRoles.isEmpty() || routeRoles.contains(Role.ANYONE)) {
             handler.handle(ctx);
             return;

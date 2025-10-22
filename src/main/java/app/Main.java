@@ -1,3 +1,5 @@
+package app;
+
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
 import app.controller.AuthController;
@@ -38,7 +40,8 @@ public class Main {
             config.staticFiles.add("/public");
             config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.accessManager(new JwtAccessManager());
+            config.router.mount(router -> {router.setRoleAccessManager(new JwtAccessManager());
+            });
         }).start(7070);
 
         // Register API routes
