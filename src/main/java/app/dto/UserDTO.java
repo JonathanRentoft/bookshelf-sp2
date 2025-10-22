@@ -1,5 +1,11 @@
 package app.dto;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class UserDTO {
     private String username;
     private String password;
@@ -14,30 +20,5 @@ public class UserDTO {
     public UserDTO(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    // Getters and Setters
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }
