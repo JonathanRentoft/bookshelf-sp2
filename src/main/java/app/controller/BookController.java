@@ -3,7 +3,6 @@ package app.controller;
 import app.dto.BookDTO;
 import app.dto.ErrorDTO;
 import app.entities.User;
-import app.security.Role;
 import app.service.BookService;
 import app.service.UserService;
 import io.javalin.Javalin;
@@ -22,36 +21,44 @@ public class BookController {
     }
 
     public void registerRoutes(Javalin app) {
-        app.get("/api/books", this::getAllBooks, Role.USER);
-        app.get("/api/books/{id}", this::getBookById, Role.USER);
-        app.post("/api/books", this::createBook, Role.USER);
-        app.put("/api/books/{id}", this::updateBook, Role.USER);
-        app.delete("/api/books/{id}", this::deleteBook, Role.USER);
+        app.get("/api/books", this::getAllBooks);
+        app.get("/api/books/{id}", this::getBookById);
+        app.post("/api/books", this::createBook);
+        app.put("/api/books/{id}", this::updateBook);
+        app.delete("/api/books/{id}", this::deleteBook);
     }
 
     private void getAllBooks(Context ctx) {
         try {
-            String username = ctx.attribute("username");
-            User user = userService.findByUsername(username);
+            String username = ctx.queryParam("username");
 
+            if (username == null || username.isEmpty()) {
+                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
+                return;
+            }
+            User user = userService.findByUsername(username);
             if (user == null) {
-                ctx.status(401).json(new ErrorDTO("User not found"));
+                ctx.status(404).json(new ErrorDTO("Bruger ikke fundet"));
                 return;
             }
 
             List<BookDTO> books = bookService.getAllBooksByUser(user.getId());
             ctx.status(200).json(books);
         } catch (Exception e) {
-            ctx.status(500).json(new ErrorDTO("Internal server error"));
+            ctx.status(500).json(new ErrorDTO("Server fejl: " + e.getMessage()));
         }
     }
 
     private void getBookById(Context ctx) {
         try {
             Long bookId = Long.parseLong(ctx.pathParam("id"));
-            String username = ctx.attribute("username");
-            User user = userService.findByUsername(username);
+            String username = ctx.queryParam("username");
 
+            if (username == null || username.isEmpty()) {
+                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
+                return;
+            }
+            User user = userService.findByUsername(username);
             if (user == null) {
                 ctx.status(401).json(new ErrorDTO("User not found"));
                 return;
@@ -84,7 +91,11 @@ public class BookController {
                 return;
             }
 
-            String username = ctx.attribute("username");
+            String username = ctx.queryParam("username");
+            if (username == null || username.isEmpty()) {
+                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
+                return;
+            }
             User user = userService.findByUsername(username);
 
             if (user == null) {
@@ -114,7 +125,12 @@ public class BookController {
                 return;
             }
 
-            String username = ctx.attribute("username");
+            String username = ctx.queryParam("username");
+            if (username == null || username.isEmpty()) {
+                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
+                return;
+            }
+
             User user = userService.findByUsername(username);
 
             if (user == null) {
@@ -138,9 +154,13 @@ public class BookController {
     private void deleteBook(Context ctx) {
         try {
             Long bookId = Long.parseLong(ctx.pathParam("id"));
-            String username = ctx.attribute("username");
-            User user = userService.findByUsername(username);
+            String username = ctx.queryParam("username");
 
+            if (username == null || username.isEmpty()) {
+                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
+                return;
+            }
+            User user = userService.findByUsername(username);
             if (user == null) {
                 ctx.status(401).json(new ErrorDTO("User not found"));
                 return;

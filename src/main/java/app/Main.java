@@ -1,12 +1,9 @@
 package app;
 
-import app.config.SessionConfig;
-import app.config.ThymeleafConfig;
 import app.controller.AuthController;
 import app.controller.BookController;
 import app.repository.BookRepository;
 import app.repository.UserRepository;
-import app.security.JwtAccessManager;
 import app.service.BookService;
 import app.service.UserService;
 import io.javalin.Javalin;
@@ -17,7 +14,6 @@ import jakarta.persistence.Persistence;
 
 public class Main {
     public static void main(String[] args) {
-        // Initializing Javalin and Jetty webserver
 
         // Initialize JPA EntityManagerFactory
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("bookshelfPU");
@@ -36,18 +32,11 @@ public class Main {
         BookController bookController = new BookController(bookService, userService);
 
         // Initializing Javalin and Jetty webserver with JWT Access Manager
-        Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("/public");
-            config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
-            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            config.router.mount(router -> {router.setRoleAccessManager(new JwtAccessManager());
-            });
-        }).start(7070);
+        Javalin app = Javalin.create().start(7070);
 
         // Register API routes
         authController.registerRoutes(app);
         bookController.registerRoutes(app);
-
 
         // shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
