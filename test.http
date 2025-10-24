@@ -1,0 +1,173 @@
+diff --git a/test.http b/test.http
+--- a/test.http
+ b/test.http
+@@ -0,0 1,171 @@
+### Book Management API - Manual Tests
+### Make sure the server is running on http://localhost:7070
+
+#########################################
+# STEP 1: REGISTER A NEW USER
+#########################################
+
+POST http://localhost:7070/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "password123"
+}
+
+### Register User 2
+POST http://localhost:7070/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "bob",
+  "password": "securepass"
+}
+
+#########################################
+# STEP 2: LOGIN TO GET JWT TOKEN
+#########################################
+
+### Login as Alice (COPY THE TOKEN FROM RESPONSE!)
+POST http://localhost:7070/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "password123"
+}
+
+### Login as Bob (COPY THE TOKEN FROM RESPONSE!)
+POST http://localhost:7070/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "bob",
+  "password": "securepass"
+}
+
+#########################################
+# STEP 3: USE THE TOKEN FOR BOOK OPERATIONS
+# Replace <ALICE_TOKEN> with the actual token from login response
+#########################################
+
+### Create Book 1 (Alice's book)
+POST http://localhost:7070/api/books
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+Content-Type: application/json
+
+{
+  "title": "The Hobbit",
+  "author": "J.R.R. Tolkien"
+}
+
+### Create Book 2 (Alice's book)
+POST http://localhost:7070/api/books
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+Content-Type: application/json
+
+{
+  "title": "1984",
+  "author": "George Orwell"
+}
+
+### Create Book 3 (Bob's book)
+POST http://localhost:7070/api/books
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2MTI5ODA5OCwiZXhwIjoxNzYxMzg0NDk4fQ.yavTt-amrfLQdvG0lU9YFiN-794jrE1sLYAzdPN6f6E>
+Content-Type: application/json
+
+{
+  "title": "Harry Potter",
+  "author": "J.K. Rowling"
+}
+
+### Get All Books (Alice) - Should return only Alice's books
+GET http://localhost:7070/api/books
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+
+### Get All Books (Bob) - Should return only Bob's books
+GET http://localhost:7070/api/books
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2MTI5ODA5OCwiZXhwIjoxNzYxMzg0NDk4fQ.yavTt-amrfLQdvG0lU9YFiN-794jrE1sLYAzdPN6f6E>
+
+### Get Book by ID (Replace 1 with actual book ID)
+GET http://localhost:7070/api/books/1
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+
+### Update Book (Replace 1 with actual book ID)
+PUT http://localhost:7070/api/books/1
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+Content-Type: application/json
+
+{
+  "title": "The Hobbit - Updated Edition",
+  "author": "J.R.R. Tolkien"
+}
+
+### Delete Book (Replace 1 with actual book ID)
+DELETE http://localhost:7070/api/books/1
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+
+#########################################
+# STEP 4: TEST ERROR CASES
+#########################################
+
+### Test: Missing Token (Should return 401)
+GET http://localhost:7070/api/books
+
+### Test: Invalid Token (Should return 401)
+GET http://localhost:7070/api/books
+Authorization: Bearer invalid-token-here
+
+### Test: Wrong credentials (Should return 401)
+POST http://localhost:7070/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "wrongpassword"
+}
+
+### Test: Missing username (Should return 400)
+POST http://localhost:7070/api/auth/register
+Content-Type: application/json
+
+{
+  "password": "password123"
+}
+
+### Test: Missing title (Should return 400)
+POST http://localhost:7070/api/books
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+Content-Type: application/json
+
+{
+  "author": "Some Author"
+}
+
+### Test: Invalid book ID format (Should return 400)
+GET http://localhost:7070/api/books/abc
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+
+### Test: Book not found (Should return 404)
+GET http://localhost:7070/api/books/99999
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxMjk4MDU5LCJleHAiOjE3NjEzODQ0NTl9.C4tgkr1NmPJjHCVg78gVW8H4iYKMCgw6HhqRiIS4eKg>
+
+### Test: Try to access another user's book (Should return 404)
+# First create a book as Alice and note the ID
+# Then try to access it as Bob - should fail
+GET http://localhost:7070/api/books/1
+Authorization: Bearer <eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2MTI5ODA5OCwiZXhwIjoxNzYxMzg0NDk4fQ.yavTt-amrfLQdvG0lU9YFiN-794jrE1sLYAzdPN6f6E>
+
+#########################################
+# NOTES FOR USAGE:
+#########################################
+#
+# 1. Start your server first: Run Main.java
+# 2. Register users using the register endpoints
+# 3. Login to get JWT tokens
+# 4. REPLACE <ALICE_TOKEN> and <BOB_TOKEN> with actual tokens from login responses
+# 5. Execute requests in order to test the full flow
+# 6. Each user can only see/modify their own books!
+#

@@ -8,6 +8,7 @@ import app.service.UserService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import app.security.JwtAuthFilter;
+import io.javalin.http.HttpStatus;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class BookController {
     private void getAllBooks(Context ctx) {
 
         JwtAuthFilter.authenticate(ctx);
-        if (ctx.status() == 401) return;
+        if (ctx.status() == HttpStatus.UNAUTHORIZED) return;
 
         try {
             String username =ctx.attribute("username");
@@ -52,7 +53,7 @@ public class BookController {
 
     private void getBookById(Context ctx) {
         JwtAuthFilter.authenticate(ctx);
-        if (ctx.status() == 401) return;
+        if (ctx.status() == HttpStatus.UNAUTHORIZED) return;
 
         try {
             Long bookId = Long.parseLong(ctx.pathParam("id"));
@@ -78,6 +79,8 @@ public class BookController {
     }
 
     private void createBook(Context ctx) {
+        JwtAuthFilter.authenticate(ctx);
+        if (ctx.status() == HttpStatus.UNAUTHORIZED) return;
         try {
             BookDTO bookDTO = ctx.bodyAsClass(BookDTO.class);
 
@@ -91,11 +94,7 @@ public class BookController {
                 return;
             }
 
-            String username = ctx.queryParam("username");
-            if (username == null || username.isEmpty()) {
-                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
-                return;
-            }
+            String username =ctx.attribute("username");
             User user = userService.findByUsername(username);
 
             if (user == null) {
@@ -111,6 +110,8 @@ public class BookController {
     }
 
     private void updateBook(Context ctx) {
+        JwtAuthFilter.authenticate(ctx);
+        if (ctx.status() == HttpStatus.UNAUTHORIZED) return;
         try {
             Long bookId = Long.parseLong(ctx.pathParam("id"));
             BookDTO bookDTO = ctx.bodyAsClass(BookDTO.class);
@@ -125,12 +126,7 @@ public class BookController {
                 return;
             }
 
-            String username = ctx.queryParam("username");
-            if (username == null || username.isEmpty()) {
-                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
-                return;
-            }
-
+            String username =ctx.attribute("username");
             User user = userService.findByUsername(username);
 
             if (user == null) {
@@ -152,14 +148,11 @@ public class BookController {
     }
 
     private void deleteBook(Context ctx) {
+        JwtAuthFilter.authenticate(ctx);
+        if (ctx.status() == HttpStatus.UNAUTHORIZED) return;
         try {
             Long bookId = Long.parseLong(ctx.pathParam("id"));
-            String username = ctx.queryParam("username");
-
-            if (username == null || username.isEmpty()) {
-                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
-                return;
-            }
+            String username =ctx.attribute("username");
             User user = userService.findByUsername(username);
 
             if (user == null) {
