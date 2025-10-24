@@ -2,9 +2,10 @@ package app.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -24,8 +25,6 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    public Book() {}
 
     public Book(String title, String author, User user) {
         this.title = title;

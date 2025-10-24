@@ -7,6 +7,7 @@ import app.service.BookService;
 import app.service.UserService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import app.security.JwtAuthFilter;
 
 import java.util.List;
 
@@ -29,13 +30,13 @@ public class BookController {
     }
 
     private void getAllBooks(Context ctx) {
-        try {
-            String username = ctx.queryParam("username");
 
-            if (username == null || username.isEmpty()) {
-                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
-                return;
-            }
+        JwtAuthFilter.authenticate(ctx);
+        if (ctx.status() == 401) return;
+
+        try {
+            String username =ctx.attribute("username");
+
             User user = userService.findByUsername(username);
             if (user == null) {
                 ctx.status(404).json(new ErrorDTO("Bruger ikke fundet"));
@@ -50,14 +51,13 @@ public class BookController {
     }
 
     private void getBookById(Context ctx) {
+        JwtAuthFilter.authenticate(ctx);
+        if (ctx.status() == 401) return;
+
         try {
             Long bookId = Long.parseLong(ctx.pathParam("id"));
-            String username = ctx.queryParam("username");
+            String username =ctx.attribute("username");
 
-            if (username == null || username.isEmpty()) {
-                ctx.status(400).json(new ErrorDTO("username parameter er påkrævet"));
-                return;
-            }
             User user = userService.findByUsername(username);
             if (user == null) {
                 ctx.status(401).json(new ErrorDTO("User not found"));
@@ -161,6 +161,7 @@ public class BookController {
                 return;
             }
             User user = userService.findByUsername(username);
+
             if (user == null) {
                 ctx.status(401).json(new ErrorDTO("User not found"));
                 return;
