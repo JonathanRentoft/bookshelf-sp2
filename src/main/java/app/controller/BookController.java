@@ -7,6 +7,7 @@ import app.service.BookService;
 import app.service.UserService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
 import app.security.JwtAuthFilter;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class BookController {
     private void getAllBooks(Context ctx) {
 
         JwtAuthFilter.authenticate(ctx);
-        if (ctx.status() == 401) return;
+        if (ctx.status() == HttpStatus.UNAUTHORIZED) return;
 
         try {
             String username =ctx.attribute("username");
@@ -52,7 +53,7 @@ public class BookController {
 
     private void getBookById(Context ctx) {
         JwtAuthFilter.authenticate(ctx);
-        if (ctx.status() == 401) return;
+        if (ctx.status() == HttpStatus.UNAUTHORIZED) return;
 
         try {
             Long bookId = Long.parseLong(ctx.pathParam("id"));
