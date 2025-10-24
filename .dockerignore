@@ -1,0 +1,28 @@
+# Ignore unnecessary files when building Docker image
+.git
+.gitignore
+README.md
+*.md
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Build output (except the final jar)
+target/*
+!target/app.jar
+
+# Test files
+src/test
+
+# Local environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

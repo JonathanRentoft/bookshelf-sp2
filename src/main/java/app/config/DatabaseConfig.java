@@ -1,0 +1,41 @@
+package app.config;
+
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Database configuration utility to handle environment variables for Docker deployment
+ */
+public class DatabaseConfig {
+
+    /**
+     * Creates EntityManagerFactory with configuration from environment variables
+     * Falls back to default values if environment variables are not set
+     */
+    public static EntityManagerFactory createEntityManagerFactory() {
+        Map<String, String> properties = new HashMap<>();
+        
+        // Get database configuration from environment variables
+        String dbHost = System.getenv("DB_HOST") != null ? System.getenv("DB_HOST") : "localhost";
+        String dbPort = System.getenv("DB_PORT") != null ? System.getenv("DB_PORT") : "5432";
+        String dbName = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "bookshelf";
+        String dbUser = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "postgres";
+        String dbPassword = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "postgres";
+        
+        // Construct JDBC URL
+        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", dbHost, dbPort, dbName);
+        
+        // Override persistence.xml properties with environment variables
+        properties.put("jakarta.persistence.jdbc.url", jdbcUrl);
+        properties.put("jakarta.persistence.jdbc.user", dbUser);
+        properties.put("jakarta.persistence.jdbc.password", dbPassword);
+        
+        System.out.println("Connecting to database: " + jdbcUrl);
+        System.out.println("Database user: " + dbUser);
+        
+        return Persistence.createEntityManagerFactory("bookshelfPU", properties);
+    }
+}
