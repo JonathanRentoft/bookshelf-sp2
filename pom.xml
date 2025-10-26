@@ -165,6 +165,17 @@
             <version>1.19.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- Swagger/OpenAPI for Javalin -->
+        <dependency>
+            <groupId>io.javalin.community.openapi</groupId>
+            <artifactId>javalin-openapi-plugin</artifactId>
+            <version>6.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.javalin.community.openapi</groupId>
+            <artifactId>javalin-swagger-plugin</artifactId>
+            <version>6.5.0</version>
+        </dependency>
     </dependencies>
 
     <build>

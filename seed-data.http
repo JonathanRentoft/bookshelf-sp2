@@ -1,0 +1,64 @@
+### Opret test bruger
+POST http://localhost:7070/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "test123"
+}
+
+### Login som test bruger
+POST http://localhost:7070/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "test123"
+}
+
+### Opret bog 1 (husk at indsætte JWT token fra login)
+POST http://localhost:7070/api/books
+Content-Type: application/json
+Authorization: Bearer INDSÆT_DIN_JWT_TOKEN_HER
+
+{
+  "title": "Harry Potter og De Vises Sten",
+  "author": "J.K. Rowling",
+  "publishedYear": 1997,
+  "genre": "Fantasy",
+  "rating": 5
+}
+
+### Opret bog 2
+POST http://localhost:7070/api/books
+Content-Type: application/json
+Authorization: Bearer INDSÆT_DIN_JWT_TOKEN_HER
+
+{
+  "title": "Ringenes Herre",
+  "author": "J.R.R. Tolkien",
+  "publishedYear": 1954,
+  "genre": "Fantasy",
+  "rating": 5
+}
+
+### Opret bog 3
+POST http://localhost:7070/api/books
+Content-Type: application/json
+Authorization: Bearer INDSÆT_DIN_JWT_TOKEN_HER
+
+{
+  "title": "1984",
+  "author": "George Orwell",
+  "publishedYear": 1949,
+  "genre": "Dystopi",
+  "rating": 4
+}
+
+### Hent alle bøger
+GET http://localhost:7070/api/books
+Authorization: Bearer INDSÆT_DIN_JWT_TOKEN_HER
+
+### Hent en specifik bog (ret ID)
+GET http://localhost:7070/api/books/1
+Authorization: Bearer INDSÆT_DIN_JWT_TOKEN_HER
