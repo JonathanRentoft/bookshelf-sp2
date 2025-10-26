@@ -11,6 +11,7 @@ import io.javalin.rendering.template.JavalinThymeleaf;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import io.javalin.plugin.bundled.RouteOverviewPlugin;
 
 public class Main {
     public static void main(String[] args) {
@@ -32,7 +33,13 @@ public class Main {
         BookController bookController = new BookController(bookService, userService);
 
         // Initializing Javalin and Jetty webserver with JWT Access Manager
-        Javalin app = Javalin.create().start(7070);
+        Javalin app = Javalin.create(config -> {
+            config.registerPlugin(new RouteOverviewPlugin(pluginConfig -> {
+                pluginConfig.path = "/api/routes";
+            }));
+
+
+        }).start(7070);
 
         // Register API routes
         authController.registerRoutes(app);
