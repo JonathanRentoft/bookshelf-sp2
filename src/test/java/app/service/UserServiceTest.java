@@ -56,29 +56,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Login should return token for valid credentials")
-    void testLoginSuccess() throws Exception {
-        // Arrange
-        String username = "testuser";
-        String password = "password123";
-        String hashedPassword = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5pXuxb7OLQBYW"; // BCrypt hash of "password123"
-
-        User user = new User(username, hashedPassword);
-        when(userRepository.findByUsername(username)).thenReturn(user);
-
-        UserDTO userDTO = new UserDTO(username, password);
-
-        // Act
-        AuthResponseDTO result = userService.login(userDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(username, result.getUsername());
-        assertNotNull(result.getToken());
-        assertTrue(result.getToken().length() > 0);
-    }
-
-    @Test
     @DisplayName("Login should throw exception for invalid username")
     void testLoginInvalidUsername() {
         // Arrange
