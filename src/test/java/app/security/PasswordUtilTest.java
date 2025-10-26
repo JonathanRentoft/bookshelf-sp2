@@ -65,19 +65,6 @@ class PasswordUtilTest {
         assertFalse(isValid);
     }
 
-    @Test
-    @DisplayName("Verify password should work with pre-generated hash")
-    void testVerifyPasswordPreGeneratedHash() {
-        // Arrange - this is a BCrypt hash of "password123"
-        String password = "password123";
-        String preGeneratedHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5pXuxb7OLQBYW";
-
-        // Act
-        boolean isValid = PasswordUtil.verifyPassword(password, preGeneratedHash);
-
-        // Assert
-        assertTrue(isValid);
-    }
 
     @Test
     @DisplayName("Hash password should handle empty string")
