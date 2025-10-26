@@ -97,7 +97,7 @@ jobs:
         with:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
-          key: ${{ secrets.DROPLET_PASSWORD }}
+          password: ${{ secrets.DROPLET_PASSWORD }}
           script: |
             cd /root/bookshelf-api
             docker-compose pull bookshelf-api
