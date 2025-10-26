@@ -1,0 +1,46 @@
+bookshelf.johannesfoog.com {
+    # Automatically obtain and renew SSL certificate
+    tls {
+        # Use Let's Encrypt for automatic HTTPS
+        # Caddy will automatically obtain certificates
+    }
+
+    # Reverse proxy to the Bookshelf API
+    reverse_proxy localhost:7070 {
+        # Add headers for better proxy support
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # Enable compression
+    encode gzip
+
+    # Logging
+    log {
+        output file /var/log/caddy/bookshelf-api.log
+        format console
+    }
+
+    # Security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Prevent clickjacking
+        X-Frame-Options "DENY"
+        # Prevent MIME type sniffing
+        X-Content-Type-Options "nosniff"
+        # Enable XSS protection
+        X-XSS-Protection "1; mode=block"
+        # Referrer policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
+
+# Alternative configuration for subdirectory deployment
+# yourdomain.com {
+#     handle /api/* {
+#         reverse_proxy localhost:7070
+#     }
+# }

@@ -1,0 +1,172 @@
+
+# STEP 1: REGISTER USERS
+
+### Register Alice
+POST http://localhost:7070/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "password123"
+}
+
+### Register Bob
+POST http://localhost:7070/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "bob",
+  "password": "securepass"
+}
+
+### Login as Alice
+# @name loginAlice
+POST http://localhost:7070/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "password123"
+}
+
+> {%
+    client.global.set("aliceToken", response.body.token);
+%}
+
+### Login as Bob
+# @name loginBob
+POST http://localhost:7070/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "bob",
+  "password": "securepass"
+}
+
+> {%
+    client.global.set("bobToken", response.body.token);
+%}
+
+
+### STEP 3: BOOK OPERATIONS (uses saved tokens automatically!)
+
+### Create Book 1 (Alice's book)
+POST http://localhost:7070/api/books
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{
+  "title": "The Hobbit",
+  "author": "J.R.R. Tolkien"
+}
+
+### Create Book 2 (Alice's book)
+POST http://localhost:7070/api/books
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{
+  "title": "1984",
+  "author": "George Orwell"
+}
+
+### Create Book 3 (Bob's book)
+POST http://localhost:7070/api/books
+Authorization: Bearer {{bobToken}}
+Content-Type: application/json
+
+{
+  "title": "Harry Potter",
+  "author": "J.K. Rowling"
+}
+
+### Get All Books (Alice) - Should return only Alice's books
+GET http://localhost:7070/api/books
+Authorization: Bearer {{aliceToken}}
+
+### Get All Books (Bob) - Should return only Bob's books
+GET http://localhost:7070/api/books
+Authorization: Bearer {{bobToken}}
+
+### Get Book by ID (Replace 1 with actual book ID)
+GET http://localhost:7070/api/books/1
+Authorization: Bearer {{aliceToken}}
+
+### Update Book (Replace 1 with actual book ID)
+PUT http://localhost:7070/api/books/1
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{
+  "title": "The Hobbit - Updated Edition",
+  "author": "J.R.R. Tolkien"
+}
+
+### Delete Book (Replace 1 with actual book ID)
+DELETE http://localhost:7070/api/books/1
+Authorization: Bearer {{aliceToken}}
+
+
+### STEP 4: TEST ERROR CASES
+
+### Test: Missing Token (Should return 401)
+GET http://localhost:7070/api/books
+
+### Test: Invalid Token (Should return 401)
+GET http://localhost:7070/api/books
+Authorization: Bearer invalid-token-here
+
+### Test: Wrong credentials (Should return 401)
+POST http://localhost:7070/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "wrongpassword"
+}
+
+### Test: Missing username (Should return 400)
+POST http://localhost:7070/api/auth/register
+Content-Type: application/json
+
+{
+  "password": "password123"
+}
+
+### Test: Missing title (Should return 400)
+POST http://localhost:7070/api/books
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{
+  "author": "Some Author"
+}
+
+### Test: Invalid book ID format (Should return 400)
+GET http://localhost:7070/api/books/abc
+Authorization: Bearer {{aliceToken}}
+
+### Test: Book not found (Should return 404)
+GET http://localhost:7070/api/books/99999
+Authorization: Bearer {{aliceToken}}
+
+### Test: Try to access another user's book (Should return 404)
+GET http://localhost:7070/api/books/1
+Authorization: Bearer {{bobToken}}
+
+
+### USAGE INSTRUCTIONS:
+
+# FIRST TIME SETUP (do once):
+# 1. Start your server: Run Main.java
+# 2. Run the two REGISTER requests in STEP 1
+
+# EVERY TIME YOU TEST:
+# 1. Run the two LOGIN requests in STEP 2
+#    - Tokens are automatically saved to {{aliceToken}} and {{bobToken}}
+# 2. Run any tests below - they'll use the saved tokens automatically!
+#
+# TO RESET EVERYTHING:
+# - delete data: TRUNCATE TABLE books, users CASCADE;
+
+
